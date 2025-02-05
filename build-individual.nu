@@ -12,7 +12,7 @@ let images = ls modules | each { |moduleDir|
         print $"(ansi cyan)Found(ansi reset) (ansi cyan_bold)unversioned(ansi reset) (ansi cyan)module:(ansi reset) ($moduleDir.name | path basename)"
 
         let tags = (
-            if ($env.GH_EVENT_NAME != "pull_request" and $env.GH_BRANCH == "main") {
+            if ($env.GH_EVENT_NAME != "pull_request" and $env.GH_BRANCH == "live") {
                 ["latest", "v1"]
             } else if ($env.GH_EVENT_NAME != "pull_request") {
                 [$env.GH_BRANCH, $"v1-($env.GH_BRANCH)"]
@@ -36,7 +36,7 @@ let images = ls modules | each { |moduleDir|
             | get name | str substring 1.. | into int | sort # sort versions properly
             | each {|version|
                 let tags = (
-                    if ($env.GH_EVENT_NAME != "pull_request" and $env.GH_BRANCH == "main") {
+                    if ($env.GH_EVENT_NAME != "pull_request" and $env.GH_BRANCH == "live") {
                         [$"v($version)"]
                     } else if ($env.GH_EVENT_NAME != "pull_request") {
                         [$"v($version)-($env.GH_BRANCH)"]
@@ -54,7 +54,7 @@ let images = ls modules | each { |moduleDir|
         }
 
         let latest_tag = (
-            if ($env.GH_EVENT_NAME != "pull_request" and $env.GH_BRANCH == "main") {
+            if ($env.GH_EVENT_NAME != "pull_request" and $env.GH_BRANCH == "live") {
                 "latest"
             } else if ($env.GH_EVENT_NAME != "pull_request") {
                 $env.GH_BRANCH
