@@ -31,7 +31,7 @@ ls modules | each { |moduleDir|
 print $"(ansi green_bold)Starting image build(ansi reset)"
 
 let tags = (
-    if ($env.GH_EVENT_NAME != "pull_request" and $env.GH_BRANCH == "main") {
+    if ($env.GH_EVENT_NAME != "pull_request" and $env.GH_BRANCH == "live") {
         ["latest"]
     } else if ($env.GH_EVENT_NAME != "pull_request") {
         [$env.GH_BRANCH]
