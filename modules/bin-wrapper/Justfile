@@ -1,0 +1,51 @@
+[private]
+default: list
+
+[private]
+list:
+    @just --list
+
+# Check Just Syntax
+[group('Just')]
+check:
+    #!/usr/bin/env bash
+    find . -type f -name "*.just" | while read -r file; do
+        echo "Checking syntax: $file"
+        just --unstable --fmt --check -f $file
+    done
+    echo "Checking syntax: Justfile"
+    just --unstable --fmt --check -f Justfile
+
+# Fix Just Syntax
+[group('Just')]
+fix:
+    #!/usr/bin/env bash
+    find . -type f -name "*.just" | while read -r file; do
+        echo "Checking syntax: $file"
+        just --unstable --fmt -f $file
+    done
+    echo "Checking syntax: Justfile"
+    just --unstable --fmt -f Justfile || { exit 1; }
+
+# Cleanup
+[group('Utility')]
+clean:
+    #!/usr/bin/env bash
+    set -euox pipefail
+    git clean -fdX
+
+# Initialize submodules
+[group('Utility')]
+init-submodules:
+    git submodule update --init
+
+# Run bats tests
+[group('Tests')]
+run-tests:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    [ ! -d ./test/bats ] && just init-submodules
+    ./test/bats/bin/bats test/test.bats
+
+[private]
+test: run-tests
