@@ -14,8 +14,8 @@ setup() {
     PATH="${DIR}/../src:${PATH}"
     # reset testdata
     rm -fr "${DIR}/testdata"
-    #"${DIR}/generate-testdata.sh" >/dev/null 2>&1 "${DIR}/testdata"
-    "${DIR}/generate-testdata.sh" 2>&1 "${DIR}/testdata"
+    "${DIR}/generate-testdata.sh" >/dev/null 2>&1 "${DIR}/testdata"
+    #"${DIR}/generate-testdata.sh" 2>&1 "${DIR}/testdata"
 }
 
 ### HELPER FUNCTIONS ###
@@ -42,8 +42,11 @@ get_json_array() {
 
 call_bin_wrapper() {
     local yaml="${1}"
+    local json="$(yaml_to_json "${yaml}")"
+    1>&3 echo "yaml: ${yaml}"
+    1>&3 echo "json: ${json}"
     local bin_wrapper="${DIR}/../bin-wrapper.sh"
-    "${bin_wrapper}" "${yaml}"
+    source "${bin_wrapper}" "${json}"
 }
 
 @test "make sure yaml_to_json works" {
@@ -55,7 +58,7 @@ call_bin_wrapper() {
       - --private-window
       - --new-tab https://example.com
     "
-    run yaml_to_json "${yaml}"
+    run yaml_to_json "${yaml}" 1>&3
     assert_output '{"type":"bin-wrapper","bin":"/home/bri/dev/desk/modules/bin-wrapper/testdata/executable","flags":["--private-window","--new-tab https://example.com"]}'
 }
 
@@ -70,6 +73,22 @@ call_bin_wrapper() {
     assert_equal "${FLAGS[*]}" "--private-window --new-tab https://example.com"
 }
 
-@test "make sure bin-wrapper works" {
+@test "wrap a binary with flags" {
+    local yaml
+    yaml="---
+    type: bin-wrapper
+    bin: ${DIR}/testdata/executable
+    flags:
+      - --private-window
+      - --new-tab https://example.com
+    "
+    run call_bin_wrapper "${yaml}"
+    assert_success
+    run "${DIR}/testdata/executable" foo bar
+    assert_output "\$0 = $(realpath -e ${DIR}/testdata/executable.real)
+--private-window
+--new-tab\ https://example.com
+foo
+bar"
     
 }
