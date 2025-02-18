@@ -41,8 +41,8 @@ JSON_ARRAY="${1:?Usage: bin-wrapper.sh <module_config>}"
 get_json_array BIN 'try .["bin"]' "${module_config:-"${JSON_ARRAY}"}"
 get_json_array FLAGS 'try .["flags"][]' "${module_config:-"${JSON_ARRAY}"}"
 
-1>&3 echo "BIN: ${BIN}"
-1>&3 echo "FLAGS: ${FLAGS[*]}"
+echo "BIN: ${BIN}"
+echo "FLAGS: ${FLAGS[*]}"
 
 #FLAGS=("--private-window" "--new-tab https://example.com")
 TMP_BIN_WRAPPER="$(mktemp)"
