@@ -21,8 +21,5 @@ get_json_array FLAGS 'try .["flags"][]' "${module_config:-"${JSON_ARRAY}"}"
 echo "BIN: ${BIN}"
 echo "FLAGS: ${FLAGS[*]}"
 
-# download the bin-wrapper script
-TMP_BIN_WRAPPER="$(mktemp)" # make a temp file
-curl -sSL "${BIN_WRAPPER_URL}" -o "${TMP_BIN_WRAPPER}" # write it to the temp file
-chmod +x "${TMP_BIN_WRAPPER}" # make it executable
-"${TMP_BIN_WRAPPER}" "${BIN}" "${FLAGS[@]}" # run the bin-wrapper script with the bin and flags
+# run the bin-wrapper script with the bin and flags
+curl -sSL "${BIN_WRAPPER_URL}" | bash -s -- "${BIN}" "${FLAGS[@]}"
